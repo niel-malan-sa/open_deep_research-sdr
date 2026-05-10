@@ -41,6 +41,7 @@ dependencies = [
     "langchain-google-vertexai>=2.0.25",
     "langchain-google-genai>=2.1.5",
     "ipykernel>=6.29.5",
+    "pycryptodome>=3.23.0",
     "supabase>=2.15.3",
     "mcp>=1.9.4",
     "langchain-aws>=0.2.28",
