@@ -14,6 +14,11 @@ if supabase_url and supabase_key:
 
 # The "Auth" object is a container that LangGraph will use to mark our authentication function
 auth = Auth()
+ALLOW_BASIC_AUTH_ONLY = os.environ.get("ALLOW_BASIC_AUTH_ONLY", "true").lower() not in {
+    "0",
+    "false",
+    "no",
+}
 
 
 # The `authenticate` decorator tells LangGraph to call this function as middleware
@@ -24,6 +29,10 @@ async def get_current_user(authorization: str | None) -> Auth.types.MinimalUserD
 
     # Ensure we have authorization header
     if not authorization:
+        if ALLOW_BASIC_AUTH_ONLY:
+            return {
+                "identity": "coolify-basic-auth",
+            }
         raise Auth.exceptions.HTTPException(
             status_code=401, detail="Authorization header missing"
         )
@@ -33,6 +42,10 @@ async def get_current_user(authorization: str | None) -> Auth.types.MinimalUserD
         scheme, token = authorization.split()
         assert scheme.lower() == "bearer"
     except (ValueError, AssertionError):
+        if ALLOW_BASIC_AUTH_ONLY:
+            return {
+                "identity": "coolify-basic-auth",
+            }
         raise Auth.exceptions.HTTPException(
             status_code=401, detail="Invalid authorization header format"
         )
